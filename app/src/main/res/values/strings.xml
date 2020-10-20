@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">kinozver</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="search_hint">Введите название фильма</string>
+    <string name="home_label">Главная</string>
+    <string name="movies_label">Фильмы</string>
+    <string name="acсount_label">Аккаунт</string>
+    <string name="show_movie_label">Смотреть %s</string>
+</resources>

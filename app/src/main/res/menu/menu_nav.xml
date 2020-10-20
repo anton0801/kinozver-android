@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:orderInCategory="1"
+        android:title="@string/home_label" />
+
+    <item
+        android:id="@+id/nav_movies"
+        android:icon="@drawable/ic_movies"
+        android:orderInCategory="2"
+        android:title="@string/movies_label" />
+
+    <item
+        android:id="@+id/nav_account"
+        android:icon="@drawable/ic_person"
+        android:orderInCategory="3"
+        android:title="@string/acсount_label" />
+
+</menu>
