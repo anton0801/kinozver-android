@@ -1,36 +1,44 @@
 package app.beer.kinozver
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.widget.Toolbar
-import app.beer.kinozver.database.AUTH
-import app.beer.kinozver.models.Movie
-import app.beer.kinozver.ui.fragments.Main.MainFragment
-import app.beer.kinozver.ui.fragments.show.MovieDetailFragment
-import app.beer.kinozver.ui.fragments.show.ShowMovieFragment
-import app.beer.kinozver.utils.APP_ACTIVITY
-import app.beer.kinozver.utils.initFirebase
-import app.beer.kinozver.utils.replaceFragment
+import app.beer.kinozver.database.*
+import app.beer.kinozver.ui.fragments.main.MainFragment
+import app.beer.kinozver.ui.fragments.account.AccountFragment
+import app.beer.kinozver.ui.fragments.register.RegisterFragment
+import app.beer.kinozver.utils.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.StorageReference
+import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_account.*
 
 class MainActivity : AppCompatActivity() {
 
-    public lateinit var main_toolbar: Toolbar
-    public lateinit var bottomNavigationView: BottomNavigationView
+    lateinit var main_toolbar: Toolbar
+    lateinit var bottomNavigationView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
         APP_ACTIVITY = this
-        replaceFragment(MainFragment())
         initFirebase()
         initFields()
+        if (AUTH.currentUser != null) {
+            initUser()
+            replaceFragment(MainFragment())
+        } else {
+            replaceFragment(RegisterFragment())
+        }
     }
 
     private fun initFields() {
@@ -41,6 +49,9 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.nav_home -> {
                     replaceFragment(MainFragment())
+                }
+                R.id.nav_account -> {
+                    replaceFragment(AccountFragment())
                 }
             }
             true

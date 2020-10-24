@@ -1,7 +1,10 @@
 package app.beer.kinozver.utils
 
+import android.content.Intent
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import app.beer.kinozver.MainActivity
 import app.beer.kinozver.R
 import app.beer.kinozver.database.*
 import app.beer.kinozver.models.User
@@ -23,6 +26,12 @@ fun replaceFragment(fragment: Fragment, addToBackStack: Boolean = false) {
     }
 }
 
+fun restartActivity() {
+    val intent = Intent(APP_ACTIVITY, MainActivity::class.java)
+    APP_ACTIVITY.finish()
+    APP_ACTIVITY.startActivity(intent)
+}
+
 fun ImageView.downloadAndSetImage(url: String) {
     if (url != "empty") {
         Picasso.get()
@@ -39,4 +48,8 @@ fun initFirebase() {
     AUTH = FirebaseAuth.getInstance()
     USER = User()
     CURRENT_UID = AUTH.currentUser?.uid.toString()
+}
+
+fun showToast(message: String) {
+    Toast.makeText(APP_ACTIVITY, message, Toast.LENGTH_SHORT).show()
 }

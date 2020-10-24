@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import app.beer.kinozver.R
-import app.beer.kinozver.models.Movie
+import app.beer.kinozver.models.movie.MovieJSON
 import app.beer.kinozver.utils.replaceFragment
 import kotlinx.android.synthetic.main.fragment_movie_detail.*
 
 class MovieDetailFragment : Fragment() {
 
-    lateinit var movie: Movie
+    lateinit var movieJSON: MovieJSON
 
     lateinit var btnShowMovie: LinearLayout
 
@@ -27,23 +27,23 @@ class MovieDetailFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        movie = arguments?.getSerializable(EXTRA_MOVIE) as Movie
+        movieJSON = arguments?.getSerializable(EXTRA_MOVIE) as MovieJSON
         initFields()
     }
 
     private fun initFields() {
         btnShowMovie = btn_show_movie
         btnShowMovie.setOnClickListener {
-            replaceFragment(ShowMovieFragment.newInstance(movie.id))
+            replaceFragment(ShowMovieFragment.newInstance(movieJSON.id))
         }
     }
 
     companion object {
         const val EXTRA_MOVIE = "EXTRA_MOVIE"
 
-        fun newInstance(movie: Movie): Fragment {
+        fun newInstance(movieJSON: MovieJSON): Fragment {
             val args = Bundle()
-            args.putSerializable(EXTRA_MOVIE, movie)
+            args.putSerializable(EXTRA_MOVIE, movieJSON)
             val fragment = MovieDetailFragment()
             fragment.arguments = args
             return fragment
