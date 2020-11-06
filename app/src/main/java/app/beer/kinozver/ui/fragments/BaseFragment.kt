@@ -10,6 +10,7 @@ open class BaseFragment(resId: Int) : Fragment(resId) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         APP_ACTIVITY.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        APP_ACTIVITY.supportActionBar?.show()
     }
 
 }

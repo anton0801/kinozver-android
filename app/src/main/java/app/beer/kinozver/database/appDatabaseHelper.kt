@@ -17,7 +17,7 @@ lateinit var CURRENT_UID: String
 lateinit var USER: User
 
 const val NODE_USERS = "users"
-const val NODE_PHOTOS = "profile_images"
+const val NODE_EMAIL = "emails"
 
 const val CHILD_ID = "id"
 const val CHILD_FULL_NAME = "userName"

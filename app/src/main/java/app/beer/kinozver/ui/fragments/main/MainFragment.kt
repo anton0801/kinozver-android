@@ -1,73 +1,64 @@
 package app.beer.kinozver.ui.fragments.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.beer.kinozver.R
+import app.beer.kinozver.models.SectionItem
 import app.beer.kinozver.models.movie.MovieJSON
+import app.beer.kinozver.models.movie.MovieValue
 import app.beer.kinozver.ui.fragments.BaseFragment
+import app.beer.kinozver.ui.fragments.show.MovieDetailFragment
+import app.beer.kinozver.utils.APP
 import app.beer.kinozver.utils.APP_ACTIVITY
+import app.beer.kinozver.utils.AppRetrofitCallback
+import app.beer.kinozver.utils.replaceFragment
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_main.*
 
 class MainFragment : BaseFragment(R.layout.fragment_main) {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: MainAdapter
     private lateinit var layoutManager: LinearLayoutManager
+    private lateinit var sections: ArrayList<SectionItem>
     private lateinit var movies: ArrayList<MovieJSON>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        APP_ACTIVITY.toolbar.title = getString(R.string.app_name)
         applyData()
         initRecyclerView()
     }
 
     private fun initRecyclerView() {
+        getMovies()
         recyclerView = recycler_view_movies
-        val adapter = MainAdapter(movies)
-        layoutManager = LinearLayoutManager(APP_ACTIVITY, RecyclerView.HORIZONTAL, false);
+        adapter = MainAdapter(sections)
+        layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = layoutManager
     }
 
     private fun applyData() {
         movies = ArrayList()
-        movies.add(
-            MovieJSON(
-                2,
-                "Грейхаунд",
-                "https://avatars.mds.yandex.net/get-kinopoisk-image/1900788/f8045316-9bca-40b2-8ddb-14038bdb7c03/300x450"
-            )
-        )
-        movies.add(
-            MovieJSON(
-                3,
-                "Форпост",
-                "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/5ac15a39-2964-497e-bb38-8299e5bc02e4/300x450"
-            )
-        )
-        movies.add(
-            MovieJSON(
-                4,
-                "Хакер",
-                "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/2b839c56-b1d8-4ca5-be0b-e500dce9214a/300x450"
-            )
-        )
-        movies.add(
-            MovieJSON(
-                5,
-                "Третий лишний 2",
-                "https://avatars.mds.yandex.net/get-kinopoisk-image/1704946/d6833329-4b00-4a4e-8072-277651a409de/300x450"
-            )
-        )
-        movies.add(
-            MovieJSON(
-                6,
-                "Почти знамениты",
-                "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/0ad9e05d-1ddc-415c-af69-aa2a2edd78e2/300x450"
-            )
-        )
+        sections = ArrayList()
+    }
+
+    private fun setMovies(movies: ArrayList<MovieJSON>) {
+        this.movies.addAll(movies)
+    }
+
+    private fun getMovies() {
+        APP.getMovieApi().getMoviesAll(1).enqueue(AppRetrofitCallback<MovieValue> { _, response ->
+            val movieValue = response.body()
+            if (movieValue != null) {
+                movies.addAll(movieValue.results)
+            }
+            sections.add(SectionItem("Фильмы", movies))
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

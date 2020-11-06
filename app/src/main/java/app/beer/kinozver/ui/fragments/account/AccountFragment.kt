@@ -31,7 +31,7 @@ class AccountFragment : BaseFragment(R.layout.fragment_account) {
         account_user_email.text = USER.email
         account_user_name_change.text = userName
         account_email_change.text = USER.email
-        account_user_photo.downloadAndSetImage(
+        account_user_photo.downloadAndSetUserImage(
             if (USER.avatarUrl == "empty")
                 "https://yt3.ggpht.com/a/AATXAJxRvoO4IiBRst4Aas-nUOlKcCufYKGxPEIGTPz7tg=s900-c-k-c0xffffffff-no-rj-mo"
             else

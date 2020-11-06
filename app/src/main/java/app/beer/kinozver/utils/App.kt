@@ -1,49 +1,61 @@
 package app.beer.kinozver.utils
 
 import android.app.Application
+import app.beer.kinozver.BuildConfig
+import app.beer.kinozver.models.movie.MovieIteractor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-const val BASE_URL = "http://videocdn.tv/api/"
-const val API_KEY = "ht74hfMgvYHQRZi2qTOfae4BIQSxkK7n"
-const val LIMIT = 30
+const val BASE_URL = "https://bazon.cc/api/"
+const val BASE_MAPS_URL = "https://bazon.cc/api/"
+const val API_KEY = "cb5e96c6aa1bd52944e49185639fdda6"
 
 class App : Application() {
 
-    private lateinit var retrofit: Retrofit
     private lateinit var movieApi: MovieApi
+    private lateinit var movieIteractor: MovieIteractor
 
-    override fun onCreate() {
-        super.onCreate()
-
+    fun getMovieApi(): MovieApi {
         val interceptor = HttpLoggingInterceptor()
+        interceptor.level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
 
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(interceptor)
             .addInterceptor { chain ->
-                val request = Request.Builder()
-                    .addHeader("limit", "$LIMIT")
-                    .addHeader("pretty_print", "1")
-                    .addHeader("api_token", API_KEY)
+                val url =chain.request()
+                    .url()
+                    .newBuilder()
+                    .addQueryParameter("token", API_KEY)
                     .build()
+
+                val request = chain.request()
+                    .newBuilder()
+                    .url(url)
+                    .build()
+
                 return@addInterceptor chain.proceed(request)
             }
             .build()
 
-        retrofit = Retrofit.Builder()
+        movieApi = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
-        movieApi = retrofit.create(MovieApi::class.java)
+            .create(MovieApi::class.java)
+        return movieApi
     }
 
-    fun getMovieApi(): MovieApi {
-        return movieApi
+    fun getPlacesApi() {
+
+    }
+
+    fun getMovieIteractor(): MovieIteractor {
+        movieIteractor = MovieIteractor()
+        return movieIteractor
     }
 
 }
