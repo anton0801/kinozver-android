@@ -2,10 +2,11 @@ package app.beer.kinozver.database
 
 import android.net.Uri
 import app.beer.kinozver.R
-import app.beer.kinozver.models.User
-import app.beer.kinozver.utils.APP_ACTIVITY
-import app.beer.kinozver.utils.AppValueEventListener
-import app.beer.kinozver.utils.showToast
+import app.beer.kinozver.models.user.User
+import app.beer.kinozver.models.user.UserResponse
+import app.beer.kinozver.ui.fragments.main.MainFragment
+import app.beer.kinozver.ui.fragments.register.RegisterFragment
+import app.beer.kinozver.utils.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.StorageReference
@@ -28,32 +29,19 @@ const val CHILD_PASSWORD = "password"
 
 const val FOLDER_USER_IMAGES = "user_images"
 
-
-fun writeUserData(password: String = "") {
-    CURRENT_UID = AUTH.currentUser?.uid.toString()
-    val hashMap = HashMap<String, Any>()
-    hashMap[CHILD_ID] = CURRENT_UID
-    hashMap[CHILD_EMAIL] = AUTH.currentUser?.email.toString()
-    hashMap[CHILD_AVATAR] = AUTH.currentUser?.photoUrl.toString()
-    hashMap[CHILD_FULL_NAME] = AUTH.currentUser?.displayName.toString()
-    hashMap[CHILD_PASSWORD] = password
-    REF_DATABASE_ROOT.child(NODE_USERS)
-        .child(CURRENT_UID)
-        .setValue(hashMap)
-        .addOnSuccessListener {
-            showToast("Добро пожаловать")
+fun initUser(id: Int) {
+    APP.getMovieApi().getUserById(id).enqueue(AppRetrofitCallback<UserResponse> { _, response ->
+        val userResponse = response.body()
+        if (userResponse != null) {
+            if (userResponse.message == "Такого пользователя не существует") {
+                showToast("Такого пользователя не существует")
+                replaceFragment(RegisterFragment())
+            } else {
+                USER = userResponse.user
+                replaceFragment(MainFragment())
+            }
         }
-        .addOnFailureListener {
-            showToast("Что-то пошло не так! ${it.message}")
-        }
-}
-
-fun initUser() {
-    REF_DATABASE_ROOT.child(NODE_USERS)
-        .child(CURRENT_UID)
-        .addListenerForSingleValueEvent(AppValueEventListener() {
-            USER = it.getValue(User::class.java) ?: User()
-        })
+    })
 }
 
 inline fun putImageToStorage(uri: Uri, path: StorageReference, crossinline onSuccess: () -> Unit) {

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.view.*
+import app.beer.kinozver.IS_AUTH_KEY
 import app.beer.kinozver.R
 import app.beer.kinozver.database.*
 import app.beer.kinozver.ui.fragments.BaseFragment
@@ -16,9 +17,12 @@ import kotlinx.android.synthetic.main.fragment_account.*
 
 class AccountFragment : BaseFragment(R.layout.fragment_account) {
 
+    private lateinit var sharedManager: SharedManager
+
     override fun onStart() {
         super.onStart()
         setHasOptionsMenu(true)
+        sharedManager = SharedManager()
         init()
     }
 
@@ -43,6 +47,12 @@ class AccountFragment : BaseFragment(R.layout.fragment_account) {
         account_change_photo_user_btn.setOnClickListener {
             changePhotoUser()
         }
+
+        sign_out_btn.setOnClickListener {
+            sharedManager.putBoolean(IS_AUTH_KEY, false)
+            restartActivity()
+        }
+        showToast(USER.toString())
     }
 
     private fun changePhotoUser() {

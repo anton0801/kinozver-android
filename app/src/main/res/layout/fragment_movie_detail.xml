@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <data>
-        <variable
-            name="movie"
-            type="app.beer.kinozver.models.movie.MovieJSON" />
-        <import type="android.view.View" />
-    </data>
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragments.show.MovieDetailFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ui.fragments.show.MovieDetailFragment">
+        android:layout_height="wrap_content"
+        android:padding="8dp">
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/movie_image"
             android:layout_width="120dp"
             android:layout_height="150dp"
             android:scaleType="centerCrop"
-            app:movieImageUrl="@{movie.info.posterUrl}"
+            android:src="@drawable/ic_launcher_background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -35,15 +31,16 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView2">
+            app:layout_constraintTop_toBottomOf="@+id/movie_image">
 
             <TextView
+                android:id="@+id/movie_is_new"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:text="@string/new_movie_label"
                 android:textColor="@android:color/holo_green_light"
-                android:visibility="@{movie.info.isNew ? View.VISIBLE : View.GONE}" />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/movie_year"
@@ -60,7 +57,7 @@
                 android:background="@android:color/darker_gray"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
-                android:text='@{String.format("%s+", movie.info.age)}' />
+                android:text='16+' />
 
             <TextView
                 android:id="@+id/movie_duration_or_episodes"
@@ -81,16 +78,27 @@
 
         </LinearLayout>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_show_movie"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:background="@android:color/white"
-            android:text="Смотреть"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/show_label"
+            android:layout_marginEnd="12dp"
+            app:layout_constraintEnd_toStartOf="@id/movie_download_btn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/movie_details" />
+
+        <ImageView
+            android:id="@+id/movie_download_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_download"
+            app:layout_constraintBottom_toBottomOf="@id/btn_show_movie"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btn_show_movie"
+            app:tint="@color/icon_tint" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/movie_desc"
@@ -105,7 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
-                android:text="@{movie.info.description}"
+                android:text=""
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -124,7 +132,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="@{movie.info.actors}"
+                android:text=""
                 app:layout_constraintStart_toEndOf="@+id/movie_actors_label"
                 app:layout_constraintTop_toTopOf="@+id/movie_actors_label" />
 
@@ -158,7 +166,7 @@
             android:weightSum="3"
             app:layout_constraintTop_toBottomOf="@+id/movie_desc">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/movie_add_like_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -167,7 +175,7 @@
                 android:drawableTop="@drawable/ic_like"
                 android:text="@string/like_label" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/movie_add_dislike_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -176,7 +184,7 @@
                 android:drawableTop="@drawable/ic_dislike"
                 android:text="@string/dislike_label" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/movie_share_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -188,11 +196,11 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             android:layout_marginTop="12dp"
             android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_action_with_movie">
 
             <TextView
@@ -209,32 +217,16 @@
 
         </LinearLayout>
 
-        <FrameLayout
-            android:id="@+id/movie_loader"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/white"
-            android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ProgressBar
-                android:id="@+id/movie_detail_progress_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center" />
-
-        </FrameLayout>
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/not_found_error"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:background="@android:color/white"
-            android:visibility="gone">
+            android:elevation="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="8dp">
 
             <ImageView
                 android:id="@+id/imageView"
@@ -264,6 +256,30 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/movie_loader"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@android:color/white"
+            android:elevation="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ProgressBar
+                android:id="@+id/movie_detail_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</layout>
+</ScrollView>

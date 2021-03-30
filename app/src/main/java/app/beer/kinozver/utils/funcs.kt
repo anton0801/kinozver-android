@@ -9,8 +9,7 @@ import androidx.fragment.app.Fragment
 import app.beer.kinozver.MainActivity
 import app.beer.kinozver.R
 import app.beer.kinozver.database.*
-import app.beer.kinozver.models.User
-import com.google.android.gms.tasks.Task
+import app.beer.kinozver.models.user.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -47,7 +46,7 @@ fun ImageView.downloadAndSetImage(url: String) {
 }
 
 fun ImageView.downloadAndSetUserImage(url: String) {
-    if (url != "empty") {
+    if (url != "") {
         Picasso.get()
             .load(url)
             .fit()

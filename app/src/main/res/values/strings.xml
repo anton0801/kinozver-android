@@ -2,6 +2,7 @@
     <string name="app_name">kinozver</string>
 
     <!-- auth -->
+    <string name="google_api">AIzaSyALgl7sOVdYySGp97ZMCEi5x5sSLoY0Ex4</string>
 
     <string name="search_hint">Введите название фильма</string>
     <string name="home_label">Главная</string>
@@ -11,7 +12,7 @@
     <string name="hint_email">Введите ваш email</string>
     <string name="hint_password">Придумайте пароль</string>
 
-    <string name="change_photo_user_label">Поменять фото профеля</string>
+    <string name="change_photo_user_label">Поменять фото профиля</string>
     <string name="change_email_label">Поменять email</string>
     <string name="change_name_label">Поменять имя</string>
     <string name="sign_out_label">Выход</string>
@@ -22,9 +23,38 @@
     <string name="email_change_successful">Ваш email изменен</string>
 
     <!-- errors -->
-    <string name="error_input_new_email">Введити ваш новый email!</string>
-    <string name="error_input_new_name">Введити какое нибуть имя!</string>
+    <string name="error_input_new_email">Введите ваш новый email!</string>
+    <string name="error_input_new_name">Введите какое нибудь имя!</string>
     <string name="error_some_went">Что-то пошло не так! %s</string>
     <string name="error_input_valid_email">Введите валидный email</string>
     <string name="photo_user_change_successful">Фото профиля удачно изменено</string>
+    <string name="successful_login_label">Вы удачно вошли</string>
+    <string name="email_is_exists_label">такой email уже есть!</string>
+    <string name="error_not_found_movie">К сожалению не удалось найти такой фильм</string>
+    <string name="actors_label">Актеры:</string>
+    <string name="director_label">Режисер:</string>
+    <string name="new_movie_label">Новинка</string>
+    <string name="like_label">Нравиться</string>
+    <string name="dislike_label">Не нравиться</string>
+    <string name="share_label">поделиться</string>
+    <string name="similar_movies_label">Похожие фильмы</string>
+    <string name="cine_label">Кинотеатры</string>
+    <string name="permission_text">Places fragment needs permission to acces device location to provide required services. Please allow the permission.</string>
+    <string name="find_cines_label">Найти кинотеатры</string>
+    <string name="rotate_phone_label">Повернуть</string>
+    <string name="subscribe_label">Купив подписку в приложений у вас не будет показываться реклама во время просмотра фильма или сериала! Подписка стоит 159 рублей в месяц</string>
+    <string name="buy">Купить</string>
+
+    <string name="billing_not_available">Подписка не доступна</string>
+    <string name="subscription_not_supported">Подписка не поддерживается</string>
+    <string name="enable_nigth_theme_label">Включить темную тему</string>
+    <string name="pasword_less_5_error">Пароль должен быть не менее 5 символов</string>
+    <string name="all_filds_done_error">Поля должны быть заполнены</string>
+    <string name="velocity_label">Скорость (%s)</string>
+    <string name="episodes_label">Серий</string>
+    <string name="choose_velocity">Выбирете скорость</string>
+    <string name="cancel_label">Отмена</string>
+    <string name="show_label">Смотреть</string>
+    <string name="cancel_download_label">Отменить</string>
+    <string name="download_started">Скачивание началось</string>
 </resources>

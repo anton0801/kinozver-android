@@ -1,14 +1,20 @@
 package app.beer.kinozver.ui.fragments.register
 
+import android.accounts.Account
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.util.Log
 import android.view.View
+import app.beer.kinozver.DEFAULT_USER_AVATAR_URL
+import app.beer.kinozver.IS_AUTH_KEY
 import app.beer.kinozver.R
+import app.beer.kinozver.USER_ID_KEY
 import app.beer.kinozver.database.*
+import app.beer.kinozver.models.auth.AuthResponse
 import app.beer.kinozver.ui.fragments.BaseFragment
 import app.beer.kinozver.utils.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -22,8 +28,12 @@ class RegisterFragment : BaseFragment(R.layout.fragment_register) {
     private lateinit var gso: GoogleSignInOptions
     private lateinit var googleSignInClient: GoogleSignInClient
 
+    private lateinit var sharedManager: SharedManager
+
     override fun onStart() {
         super.onStart()
+        sharedManager = SharedManager()
+
         init()
     }
 
@@ -45,6 +55,7 @@ class RegisterFragment : BaseFragment(R.layout.fragment_register) {
     }
 
     private fun loginGoogle() {
+        progressBar.visibility = View.VISIBLE
         val intent = googleSignInClient.signInIntent
         startActivityForResult(intent, GOOGLE_SIGN_IN_REQUEST_CODE)
     }
@@ -53,73 +64,44 @@ class RegisterFragment : BaseFragment(R.layout.fragment_register) {
         val email = text_input_layout_email.editText?.text?.toString()
         val password = text_input_layout_password.editText?.text?.toString()
         if (email != null && password != null) {
-            REF_DATABASE_ROOT.child(NODE_EMAIL)
-                .addValueEventListener(AppValueEventListener() {
-                    if (it.hasChild(email.substring(0, email.length - 5))) {
-                        loginEmail(email, password)
+            if (email.isNotEmpty() && isEmailValid(email)) {
+                if (password.length >= 5) {
+                    progressBar.visibility = View.VISIBLE
+                    login(email, password)
+                } else {
+                    text_input_layout_password.error = getString(R.string.pasword_less_5_error)
+                }
+            } else {
+                text_input_layout_email.error = getString(R.string.error_input_valid_email)
+            }
+        } else {
+            showToast(getString(R.string.all_filds_done_error))
+        }
+    }
+
+    private fun login(
+        email: String = "",
+        password: String = "",
+        userSocialId: String = "",
+        name: String = "",
+        photoUrl: String = ""
+    ) {
+        val n = if (name != "") name else email
+        val avatar = if (photoUrl != "") photoUrl else DEFAULT_USER_AVATAR_URL
+        APP.getMovieApi().auth(email, password, userSocialId, n, avatar)
+            .enqueue(AppRetrofitCallback<AuthResponse> { _, response ->
+                val authResponse = response.body()
+                if (authResponse != null) {
+                    if (authResponse.message == "Вы удачно зарегистрировались" || authResponse.message == "Вы удачно вошли") {
+                        sharedManager.putBoolean(IS_AUTH_KEY, true)
+                        sharedManager.putInt(USER_ID_KEY, authResponse.id)
+                        restartActivity()
                     } else {
-                        registerEmail(email, password)
+                        showToast(authResponse.message)
                     }
-                })
-        } else {
-            showToast("Поля должны быть заполнены")
-        }
-    }
-
-    private fun registerEmail(email: String, password: String) {
-        if (email.isNotEmpty() && isEmailValid(email)) {
-            if (password.length >= 6) {
-                AUTH.createUserWithEmailAndPassword(email, password)
-                    .addOnSuccessListener {
-                        writeUserData(password)
-                        restartActivity()
-                    }
-                    .addOnFailureListener {
-                        showToast("Что-то пошло не так! ${it.message}")
-                    }
-            } else {
-                text_input_layout_password.error = "Пароль должен быть больше 6 символов"
-            }
-        } else if (!isEmailValid(email)) {
-            text_input_layout_email.error = getString(R.string.error_input_valid_email)
-        } else {
-            text_input_layout_email.error = "Введите ваш email"
-        }
-    }
-
-    private fun loginEmail(email: String, password: String) {
-        if (email == null || password == null) {
-            showToast("Поля должны быть заполнены")
-            return
-        }
-        if (email.isNotEmpty() && isEmailValid(email)) {
-            if (password.length >= 6) {
-                AUTH.signInWithEmailAndPassword(email, password)
-                    .addOnSuccessListener {
-                        restartActivity()
-                        showToast(getString(R.string.successful_login_label))
-                    }
-                    .addOnFailureListener { showToast(it.message.toString()) }
-            } else {
-                text_input_layout_password.error = "Пароль должен быть больше 6 символов"
-            }
-        } else if (!isEmailValid(email)) {
-            text_input_layout_email.error = getString(R.string.error_input_valid_email)
-        } else {
-            text_input_layout_email.error = "Введите ваш email"
-        }
-    }
-
-    private fun login(authCredential: AuthCredential) {
-        AUTH.signInWithCredential(authCredential)
-            .addOnSuccessListener {
-                writeUserData()
-                restartActivity()
-                showToast(getString(R.string.successful_login_label))
-            }
-            .addOnFailureListener {
-                showToast("Что-то погло не так! ${it.message}")
-            }
+                }
+                progressBar.visibility = View.GONE
+            })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -130,18 +112,24 @@ class RegisterFragment : BaseFragment(R.layout.fragment_register) {
             try {
                 val account = task.getResult(ApiException::class.java)
                 if (account != null) {
-                    signInWithGoogle(account.idToken)
+                    signInWithGoogle(account)
                 }
             } catch (e: ApiException) {
+                progressBar.visibility = View.GONE
                 showToast(e.message.toString())
                 Log.d("GoogleSignIn", e.message.toString())
             }
         }
     }
 
-    private fun signInWithGoogle(idToken: String?) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        login(credential)
+    private fun signInWithGoogle(account: GoogleSignInAccount) {
+        login(
+            account.email.toString(),
+            "",
+            account.id.toString(),
+            account.displayName.toString(),
+            account.photoUrl.toString()
+        )
     }
 
     companion object {
